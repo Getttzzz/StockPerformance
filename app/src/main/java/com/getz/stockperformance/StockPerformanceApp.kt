@@ -1,6 +1,7 @@
 package com.getz.stockperformance
 
 import android.app.Application
+import com.getz.stockperformance.di.mainModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -11,7 +12,7 @@ class StockPerformanceApp: Application() {
 
         startKoin {
             androidContext(this@StockPerformanceApp)
-            modules()
+            modules(mainModules(this@StockPerformanceApp))
         }
     }
 }

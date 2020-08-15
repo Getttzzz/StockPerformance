@@ -5,21 +5,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.getz.stockperformance.R
 import com.google.android.material.tabs.TabLayout
-import org.koin.androidx.viewmodel.ext.android.viewModel
-
-
-// todo 1. Parse .json files to readable model
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
-    val mainViewModel by viewModel<MainViewModel>()
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        mainViewModel = getViewModel()
+
         setupViewPager()
 
-
+        mainViewModel.testDataSource()
     }
 
     private fun setupViewPager() {
