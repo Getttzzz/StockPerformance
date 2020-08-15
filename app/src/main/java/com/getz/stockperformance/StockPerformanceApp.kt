@@ -11,7 +11,7 @@ class StockPerformanceApp: Application() {
 
         startKoin {
             androidContext(this@StockPerformanceApp)
-            // todo add repo module
+            modules()
         }
     }
 }
