@@ -17,8 +17,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         mainViewModel = getViewModel()
 
         setupViewPager()
-
-        mainViewModel.testDataSource()
     }
 
     private fun setupViewPager() {
