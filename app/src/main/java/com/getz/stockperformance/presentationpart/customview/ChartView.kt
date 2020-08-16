@@ -45,44 +45,72 @@ class ChartView(
         strokeWidth = 5f
     }
 
+    private val axisTextPain = Paint().apply {
+        color = Color.GRAY
+        isAntiAlias = true
+        textSize = 36f
+        textAlign = Paint.Align.CENTER
+    }
+
+    private val testPain = Paint().apply {
+        color = Color.RED
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+        strokeWidth = 10f
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         heightWithPadding = height - BOTTOM_PADDING
+        val viewWidthWithPadding = width - START_PADDING
+        val viewHeightWithPadding = height - BOTTOM_PADDING
 
         drawAxisX(canvas)
         drawAxisY(canvas)
+
+        val axisYNumbers = mutableListOf<Int>()
+        for (i in bottomValueAxisY..topValueAxisY step 10) {
+            axisYNumbers.add(i)
+        }
+        var accumulatorY = viewHeightWithPadding
+        val stepY = viewHeightWithPadding / axisYNumbers.size
+        val xForAxisY = (START_PADDING / 2).toFloat()
+        axisYNumbers.forEach { number ->
+            canvas.drawText(number.toString(), xForAxisY, accumulatorY.toFloat(), axisTextPain)
+            canvas.drawPoint(xForAxisY, accumulatorY.toFloat(), testPain)
+            accumulatorY -= stepY
+        }
 
         // Apple stocks for month (21 working day)
         if (stocks.isNotEmpty()) {
             val appleStocks = stocks[0]
 
-            val viewWidthWithPadding = width - START_PADDING
-            var progressiveX = START_PADDING
-            val progressiveStepPx = viewWidthWithPadding / appleStocks.valuesMap.size
+            var accumulatorX = START_PADDING
+            val stepX = viewWidthWithPadding / appleStocks.valuesMap.size
 
             appleStocks.valuesMap.entries.forEachIndexed { index, entry ->
 
                 if (index < appleStocks.valuesMap.size - 1) {
                     val nextPoint = appleStocks.valuesMap.values.toMutableList()[index + 1]
 
-                    val startX = progressiveX.toFloat()
+                    val startX = accumulatorX.toFloat()
                     val startY = entry.value.toRealY()
-                    val endX = (progressiveX + progressiveStepPx).toFloat()
-                    val endY = nextPoint.toRealY()
+                    val stopX = (accumulatorX + stepX).toFloat()
+                    val stopY = nextPoint.toRealY()
 
-                    canvas.drawLine(startX, startY, endX, endY, stockLinePaint)
+                    canvas.drawLine(startX, startY, stopX, stopY, stockLinePaint)
                 }
 
                 // todo add text above each circle "328.2 (+1.7%)"
                 canvas.drawCircle(
-                    progressiveX.toFloat(),
+                    accumulatorX.toFloat(),
                     entry.value.toRealY(),
                     10f,
                     stockPointPaint
                 )
 
-                progressiveX += progressiveStepPx
+                accumulatorX += stepX
             }
         }
     }
