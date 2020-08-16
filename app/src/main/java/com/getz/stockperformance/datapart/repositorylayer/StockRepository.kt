@@ -6,7 +6,7 @@ import com.getz.stockperformance.domainpart.entitylayer.Stock
 import com.getz.stockperformance.domainpart.repositorylayer.IStockRepository
 
 class StockRepository(
-    val stocksDS: IStocksDS
+    private val stocksDS: IStocksDS
 ) : IStockRepository {
 
     override suspend fun getMonthStocks(): List<Stock> {
@@ -14,6 +14,6 @@ class StockRepository(
     }
 
     override suspend fun getWeekStocks(): List<Stock> {
-        TODO("Not yet implemented")
+        return stocksDS.getWeekStocks().toDomain()
     }
 }

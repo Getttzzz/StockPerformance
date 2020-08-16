@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">StockPerformance</string>
-    <string name="tab_text_1">Last week stocks</string>
-    <string name="tab_text_2">Last month stocks</string>
+    <string name="tab_text_week">Last week stocks</string>
+    <string name="tab_text_month">Last month stocks</string>
 </resources>

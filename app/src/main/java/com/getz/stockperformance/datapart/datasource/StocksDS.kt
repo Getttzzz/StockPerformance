@@ -7,23 +7,18 @@ import java.io.IOException
 import java.nio.charset.Charset
 
 class StocksDS(
-    val context: Context,
-    val gson: Gson
+    private val context: Context,
+    private val gson: Gson
 ) : IStocksDS {
 
     override suspend fun getMonthStocks(): StocksResponse {
         val json = loadJsonFromAsset(context, "responseQuotesMonth.json")
-        val stocksResponse = gson.fromJson(json, StocksResponse::class.java)
-        println("GETTTZZZ.StocksDS.getMonthStocks ---> stocksResponse=$stocksResponse")
-
-        return stocksResponse
+        return gson.fromJson(json, StocksResponse::class.java)
     }
 
     override suspend fun getWeekStocks(): StocksResponse {
         val json = loadJsonFromAsset(context, "responseQuotesWeek.json")
-
-
-        TODO("Not yet implemented")
+        return gson.fromJson(json, StocksResponse::class.java)
     }
 
     private fun loadJsonFromAsset(context: Context, fileName: String): String {

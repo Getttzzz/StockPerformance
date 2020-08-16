@@ -11,20 +11,20 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
 
     companion object {
         private val TAB_TITLES = arrayOf(
-            R.string.tab_text_1,
-            R.string.tab_text_2
+            R.string.tab_text_month,
+            R.string.tab_text_week
         )
-        const val STOCK_WEEK_TAB_POSITION = 0
-        const val STOCK_MONTH_TAB_POSITION = 1
+        const val STOCK_MONTH_TAB_POSITION = 0
+        const val STOCK_WEEK_TAB_POSITION = 1
     }
 
     override fun getItem(position: Int): Fragment = when (position) {
         STOCK_WEEK_TAB_POSITION -> StocksWeekFragment.newInstance()
-//        STOCK_MONTH_TAB_POSITION -> StocksWeekFragment.newInstance()
+        STOCK_MONTH_TAB_POSITION -> StocksMonthFragment.newInstance()
         else -> throw IllegalArgumentException("Wrong position")
     }
 
     override fun getPageTitle(position: Int) = context.resources.getString(TAB_TITLES[position])
 
-    override fun getCount() = 1
+    override fun getCount() = 2
 }
