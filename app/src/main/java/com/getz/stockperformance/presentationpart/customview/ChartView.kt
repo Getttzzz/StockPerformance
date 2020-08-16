@@ -35,20 +35,23 @@ class ChartView(
     }
 
     private val stockLinePaint = Paint().apply {
-        color = Color.LTGRAY
+        color = Color.CYAN
         strokeWidth = 5f
         isAntiAlias = true
     }
 
     private val axisLinePaint = Paint().apply {
-        color = Color.YELLOW
-        strokeWidth = 3f
+        color = Color.LTGRAY
+        strokeWidth = 5f
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         heightWithPadding = height - BOTTOM_PADDING
+
+        drawAxisX(canvas)
+        drawAxisY(canvas)
 
         // Apple stocks for month (21 working day)
         if (stocks.isNotEmpty()) {
@@ -59,6 +62,7 @@ class ChartView(
             val progressiveStepPx = viewWidthWithPadding / appleStocks.valuesMap.size
 
             appleStocks.valuesMap.entries.forEachIndexed { index, entry ->
+
                 if (index < appleStocks.valuesMap.size - 1) {
                     val nextPoint = appleStocks.valuesMap.values.toMutableList()[index + 1]
 
@@ -70,7 +74,6 @@ class ChartView(
                     canvas.drawLine(startX, startY, endX, endY, stockLinePaint)
                 }
 
-
                 // todo add text above each circle "328.2 (+1.7%)"
                 canvas.drawCircle(
                     progressiveX.toFloat(),
@@ -81,14 +84,12 @@ class ChartView(
 
                 progressiveX += progressiveStepPx
             }
-
-
         }
     }
 
     // todo calculate one stock (AAPL)
-    // todo after that, add others to the chart.
     // todo Figure out max and min Y values among three maps of stocks.
+    // todo after that, add others to the chart.
 
     fun setupData(stocks: MutableList<Stock>) {
         println("GETTTZZZ.ChartView.setupData ---> stocks.size=${stocks.size}")
@@ -107,6 +108,26 @@ class ChartView(
         this.stocks.clear()
         this.stocks.addAll(stocks)
         invalidate()
+    }
+
+    private fun drawAxisX(canvas: Canvas) {
+        canvas.drawLine(
+            START_PADDING.toFloat(),
+            0f,
+            START_PADDING.toFloat(),
+            heightWithPadding.toFloat(),
+            axisLinePaint
+        )
+    }
+
+    private fun drawAxisY(canvas: Canvas) {
+        canvas.drawLine(
+            START_PADDING.toFloat(),
+            heightWithPadding.toFloat(),
+            width.toFloat(),
+            heightWithPadding.toFloat(),
+            axisLinePaint
+        )
     }
 
     private fun getMinValueFromLists(stocks: MutableList<Stock>): Int {
