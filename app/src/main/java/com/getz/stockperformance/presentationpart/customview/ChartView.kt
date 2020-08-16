@@ -6,6 +6,9 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
+import com.getz.stockperformance.R
 import com.getz.stockperformance.domainpart.entitylayer.Stock
 
 class ChartView(
@@ -18,6 +21,7 @@ class ChartView(
         private const val BOTTOM_PADDING = 120
         private const val TOP_PADDING = 50
         private const val TEXT_SIZE = 36f
+        private const val Y_AXIS_NUMBERS_STEP = 20
     }
 
     private val stocks: MutableList<Stock> = mutableListOf()
@@ -29,15 +33,15 @@ class ChartView(
     private var diffTopBottomAxisY = 0
     private var heightWithPadding = 0
 
-    private val stockPointPaint = Paint().apply {
-        color = Color.GRAY
+    private fun getStockPointPaint(@ColorRes colorResId: Int) = Paint().apply {
+        color = ContextCompat.getColor(this@ChartView.context, colorResId)
         strokeWidth = 5f
         style = Paint.Style.STROKE
         isAntiAlias = true
     }
 
-    private val stockLinePaint = Paint().apply {
-        color = Color.CYAN
+    private fun getStockLinePaint(@ColorRes colorResId: Int) = Paint().apply {
+        color = ContextCompat.getColor(this@ChartView.context, colorResId)
         strokeWidth = 5f
         isAntiAlias = true
     }
@@ -78,41 +82,55 @@ class ChartView(
             drawAxisX(canvas)
             drawYAxisNumbersAndHorizontalLines(canvas)
 
-            //========Draw apple stocks===========
+            stocks.forEach { currentStock ->
 
-            val appleStocks = stocks[0]
-            var accumulatorX = START_PADDING
-            val stepX = viewWidthWithPadding / appleStocks.valuesMap.size
-
-            appleStocks.valuesMap.entries.forEachIndexed { index, entry ->
-
-                if (index < appleStocks.valuesMap.size - 1) {
-                    val nextPoint = appleStocks.valuesMap.values.toMutableList()[index + 1]
-
-                    val startX = accumulatorX.toFloat()
-                    val startY = entry.value.toRealY()
-                    val stopX = (accumulatorX + stepX).toFloat()
-                    val stopY = nextPoint.toRealY()
-
-                    canvas.drawLine(startX, startY, stopX, stopY, stockLinePaint)
+                val (lineColor, circleColor) = when (currentStock.stockName) {
+                    "AAPL" -> R.color.colorChartAppleLine to R.color.colorChartAppleCircle
+                    "MSFT" -> R.color.colorChartMicrosoftLine to R.color.colorChartMicrosoftCircle
+                    "SPY" -> R.color.colorChartStandardAndPoorLine to R.color.colorChartStandardAndPoorCircle
+                    else -> R.color.colorChartDefaultLine to R.color.colorChartDefaultCircle
                 }
 
-                // todo add text above each circle "328.2 (+1.7%)"
-                canvas.drawCircle(
-                    accumulatorX.toFloat(),
-                    entry.value.toRealY(),
-                    10f,
-                    stockPointPaint
-                )
+                var accumulatorX = START_PADDING
+                val stepX = viewWidthWithPadding / currentStock.valuesMap.size
+                currentStock.valuesMap.entries.forEachIndexed { index, entry ->
+                    if (index < currentStock.valuesMap.size - 1) {
+                        val nextPoint = currentStock.valuesMap.values.toMutableList()[index + 1]
 
-                accumulatorX += stepX
+                        val startX = accumulatorX.toFloat()
+                        val startY = entry.value.toRealY()
+                        val stopX = (accumulatorX + stepX).toFloat()
+                        val stopY = nextPoint.toRealY()
+
+                        canvas.drawLine(startX, startY, stopX, stopY, getStockLinePaint(lineColor))
+                    }
+                    canvas.drawCircle(
+                        accumulatorX.toFloat(),
+                        entry.value.toRealY(),
+                        10f,
+                        getStockPointPaint(circleColor)
+                    )
+                    accumulatorX += stepX
+                }
             }
         }
     }
 
+    fun setupData(stocks: MutableList<Stock>) {
+        yMin = getMinValueFromLists(stocks)
+        yMax = getMaxValueFromLists(stocks)
+        topValueAxisY = yMax.roundToTens(true)
+        bottomValueAxisY = yMin.roundToTens(false)
+        diffTopBottomAxisY = topValueAxisY - bottomValueAxisY
+
+        this.stocks.clear()
+        this.stocks.addAll(stocks)
+        invalidate()
+    }
+
     private fun drawYAxisNumbersAndHorizontalLines(canvas: Canvas) {
         val axisYNumbers = mutableListOf<Int>()
-        for (i in bottomValueAxisY..topValueAxisY step 10) {
+        for (i in bottomValueAxisY..topValueAxisY step Y_AXIS_NUMBERS_STEP) {
             axisYNumbers.add(i)
         }
         var accumulatorYForText = heightWithPadding + TOP_PADDING + (TEXT_SIZE / 4)
@@ -134,29 +152,6 @@ class ChartView(
             accumulatorYForText -= stepY
             accumulatorYForHorizontalLines -= stepY
         }
-    }
-
-    // todo calculate one stock (AAPL)
-    // todo Figure out max and min Y values among three maps of stocks.
-    // todo after that, add others to the chart.
-
-    fun setupData(stocks: MutableList<Stock>) {
-        println("GETTTZZZ.ChartView.setupData ---> stocks.size=${stocks.size}")
-
-        yMin = stocks.get(0).valuesMap.values.min()?.toInt() ?: 0 //yMin=353
-        yMax = stocks.get(0).valuesMap.values.max()?.toInt() ?: 0 //yMax=393
-        //todo uncomment when I start scaling solution to work with arrays.
-        //yMin = getMinValueFromLists(stocks)
-        //yMax = getMaxValueFromLists(stocks)
-        topValueAxisY = yMax.roundToTens(true) //topValueAxisY=400
-        bottomValueAxisY = yMin.roundToTens(false) //bottomValueAxisY=340
-        diffTopBottomAxisY = topValueAxisY - bottomValueAxisY //diffTopBottomAxisY=60
-
-        println("GETTTZZZ.ChartView.setupData ---> yMin=$yMin yMax=$yMax topValueAxisY=$topValueAxisY bottomValueAxisY=$bottomValueAxisY diffTopBottomAxisY=$diffTopBottomAxisY")
-
-        this.stocks.clear()
-        this.stocks.addAll(stocks)
-        invalidate()
     }
 
     private fun drawAxisY(canvas: Canvas) {

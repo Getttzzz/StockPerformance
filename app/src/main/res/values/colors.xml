@@ -4,4 +4,12 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="colorPrimaryAlmostTransparent">#1A6200EE</color>
+    <color name="colorChartAppleLine">#9929B6F6</color>
+    <color name="colorChartAppleCircle">#29B6F6</color>
+    <color name="colorChartMicrosoftLine">#9943A047</color>
+    <color name="colorChartMicrosoftCircle">#43A047</color>
+    <color name="colorChartStandardAndPoorLine">#99000000</color>
+    <color name="colorChartStandardAndPoorCircle">#D10046</color>
+    <color name="colorChartDefaultLine">#99353535</color>
+    <color name="colorChartDefaultCircle">#353535</color>
 </resources>
