@@ -3,8 +3,6 @@ Test proj to show how to draw charts for stocks
 
 This is video how it looks like: https://drive.google.com/file/d/1HV-bhgf_1JL2tBqd2Ocubp8wRChjDk7D/view?usp=sharing
 
-Time of coding: 8h + 9h (2 days).
-
 Screenshots of the progress (from first try to final result):
 1) https://drive.google.com/file/d/1YIyIt7UEnpRJWLgi_JtygQbK5SmqY7bB/view?usp=sharing (My first try, absolute coordinates)
 2) https://drive.google.com/file/d/177fLatXBdQh01XBOQp8PyPUWV102o1K7/view?usp=sharing (It's when I achieved needed scale for chart)
