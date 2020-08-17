@@ -21,7 +21,8 @@ class ChartView(
         private const val BOTTOM_PADDING = 120
         private const val TOP_PADDING = 50
         private const val TEXT_SIZE = 36f
-        private const val Y_AXIS_NUMBERS_STEP = 20
+        private const val Y_AXIS_NUMBERS_STEP = 1
+        const val Y_AXIS_SCALE = 1
     }
 
     private val stocks: MutableList<Stock> = mutableListOf()
@@ -92,10 +93,11 @@ class ChartView(
                 }
 
                 var accumulatorX = START_PADDING
-                val stepX = viewWidthWithPadding / currentStock.valuesMap.size
-                currentStock.valuesMap.entries.forEachIndexed { index, entry ->
-                    if (index < currentStock.valuesMap.size - 1) {
-                        val nextPoint = currentStock.valuesMap.values.toMutableList()[index + 1]
+                val stepX = viewWidthWithPadding / currentStock.percentPerformanceMap.size
+                currentStock.percentPerformanceMap.entries.forEachIndexed { index, entry ->
+                    if (index < currentStock.percentPerformanceMap.size - 1) {
+                        val nextPoint =
+                            currentStock.percentPerformanceMap.values.toMutableList()[index + 1]
 
                         val startX = accumulatorX.toFloat()
                         val startY = entry.value.toRealY()
@@ -140,7 +142,7 @@ class ChartView(
         val xForAxisY = (START_PADDING / 2).toFloat()
         axisYNumbers.forEach { number ->
 
-            canvas.drawText(number.toString(), xForAxisY, accumulatorYForText, axisTextPain)
+            canvas.drawText("$number%", xForAxisY, accumulatorYForText, axisTextPain)
             canvas.drawLine(
                 START_PADDING.toFloat(),
                 accumulatorYForHorizontalLines,
@@ -176,14 +178,14 @@ class ChartView(
 
     private fun getMinValueFromLists(stocks: MutableList<Stock>): Int {
         return stocks.map {
-            val min = it.valuesMap.values.min()?.toInt() ?: 0
+            val min = it.percentPerformanceMap.values.min()?.toInt() ?: 0
             min
         }.min() ?: 0
     }
 
     private fun getMaxValueFromLists(stocks: MutableList<Stock>): Int {
         return stocks.map {
-            val max = it.valuesMap.values.max()?.toInt() ?: 0
+            val max = it.percentPerformanceMap.values.max()?.toInt() ?: 0
             max
         }.max() ?: 0
     }
@@ -192,4 +194,5 @@ class ChartView(
         ((topValueAxisY - this.toFloat()) * (heightWithPadding) / diffTopBottomAxisY) + TOP_PADDING
 }
 
-internal fun Int.roundToTens(above: Boolean) = (if (above) this + 10 else this - 10) - (this % 10)
+internal fun Int.roundToTens(above: Boolean) =
+    (if (above) this + ChartView.Y_AXIS_SCALE else this - ChartView.Y_AXIS_SCALE) - (this % ChartView.Y_AXIS_SCALE)
